@@ -9,19 +9,9 @@ class DiscardStrategy(object):
 		self.Discard = np.array([],int)
 
 	@abstractmethod
-	def discard_check(self,Hand):
+	def discard_check(self):
 		raise NotImplementedError()
 
-class CallStrategy(object):
-	__metaclass__ = ABCMeta
-
-	def __init__(self,Hand):
-		self.Hand = Hand
-		self.Call = np.array([],int)
-
-	@abstractmethod
-	def call_check(self,Hand):
-		raise NotImplementedError()
 
 class BasicLogic(DiscardStrategy):
 	def __init__(self,Hand):

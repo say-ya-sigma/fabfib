@@ -11,9 +11,12 @@ if __name__ == '__main__':
 		Game = ff.Game()
 		Player = ff.Player(Game,[])
 
-		while Game.evaluate_hand() !=  999:
+		while Game.CurrentNumber !=  999:
 			Player.turn()
+			print("Hand")
 			print(Game.evaluate_hand())
+			print("Call")
+			print(Game.CurrentNumber)
 
 		SumTurns += Game.get_turn()
 
