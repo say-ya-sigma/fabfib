@@ -27,13 +27,23 @@ class BasicLogic(CallStrategy):
 		EvaluatedValue = super().evaluate_hand(self.Hand)
 
 		if self.Number >= EvaluatedValue:
-			CalledHand = np.array([int(i) for i in list(str(self.Number))])
-			for i in range(2, 2-self.DiscardCount, -1):
-				CalledHand[i] += 1
-				CalledHand[i] += np.random.poisson(lam=0.2)
-				if CalledHand[i] > 9:
-					CalledHand[i] = 9
-			return super().evaluate_hand(np.sort(CalledHand)[::-1])
+			ToCall = np.array([int(i) for i in list(str(self.Number))])
+			ToCall = np.sort(ToCall) #ascending order
+			NonNines = 3 - len(np.where(ToCall == 9)[0])
+			IncreaseFrom = min(self.DiscardCount,NonNines) -1
+
+			for i in range(0,IncreaseFrom):
+				ToCall[i] = np.random.poisson(lam=4)
+				if ToCall[i] > 9:
+					ToCall[i] = 9
+			
+			ToCall[IncreaseFrom] += 1
+			ToCall[IncreaseFrom] += np.random.poisson(lam=0.2)
+			if ToCall[IncreaseFrom] > 9:
+				ToCall[IncreaseFrom] = 9
+					
+			
+			return super().evaluate_hand(np.sort(ToCall)[::-1])
 
 		else:
 			return EvaluatedValue
