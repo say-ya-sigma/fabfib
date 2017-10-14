@@ -26,21 +26,24 @@ class BasicLogic(CallStrategy):
 	def call_check(self):
 		EvaluatedValue = super().evaluate_hand(self.Hand)
 
+		## if real hand's value is weak, Calling fake number based on Game's State
 		if self.Number >= EvaluatedValue:
+
+			## Leaves to change is based on NonNines Count of Game's Number or DiscardCount.
 			ToCall = np.array([int(i) for i in list(str(self.Number))])
 			ToCall = np.sort(ToCall) #ascending order
 			NonNines = 3 - len(np.where(ToCall == 9)[0])
-			IncreaseFrom = min(self.DiscardCount,NonNines) -1
+			LeavesToChange = min(self.DiscardCount,NonNines) -1
 
-			for i in range(0,IncreaseFrom):
+			for i in range(0,LeavesToChange):
 				ToCall[i] = np.random.poisson(lam=4)
 				if ToCall[i] > 9:
 					ToCall[i] = 9
 			
-			ToCall[IncreaseFrom] += 1
-			ToCall[IncreaseFrom] += np.random.poisson(lam=0.2)
-			if ToCall[IncreaseFrom] > 9:
-				ToCall[IncreaseFrom] = 9
+			ToCall[LeavesToChange] += 1
+			ToCall[LeavesToChange] += np.random.poisson(lam=0.2)
+			if ToCall[LeavesToChange] > 9:
+				ToCall[LeavesToChange] = 9
 					
 			
 			return super().evaluate_hand(np.sort(ToCall)[::-1])

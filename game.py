@@ -1,12 +1,13 @@
+import time
 import fabfib as ff
 import output as op
+import sys
 
-
-GAMES = 10
+GAMES = int(sys.argv[1])
 
 if __name__ == '__main__':
+	CurrentTime = time.time()
 
-	SumTurns = 0
 	for games in range(GAMES):
 		print("Game")
 		print(games)
@@ -15,14 +16,18 @@ if __name__ == '__main__':
 		Player2 = ff.Player(Game,[])
 		PlayerList = [Player1,Player2]
 		Output = op.Output(Game)
+		print("First Hand")
+		print(Game.evaluate_hand())
 
-		while Game.CurrentNumber != 999:
+		while Game.get_current_number() != 999:
 			for Player in PlayerList:
 				Player.turn()
 				Output.every_turn()
-				if Game.CurrentNumber >=  999:
+				if Game.get_current_number() >=  999:
 					break
 
+		print(Game.HistoryOfNumber)
+		print(Game.TurnsOfDoubt)
 		SumTurns += Game.get_turn()
 
-	print(SumTurns/GAMES)
+	print('time: ' + str(time.time() - CurrentTime))

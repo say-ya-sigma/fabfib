@@ -1,23 +1,24 @@
 import numpy as np
 import discard as dc
 import call as cl
+import output as op
 
 class Game(object):
 	def __init__(self):## constructor
 		self.Cards = np.empty((0,3),int)
 		for i in range(10):
 			self.Cards = np.append(self.Cards, np.array([[5,0,0]]),axis=0)## Deck Hand Trash
-		self.CurrentNumber = 0
+		self.HistoryOfNumber = []
 		self.Turn = 1
+		self.TurnsOfDoubt = []
 		self.draw(3)
-		print("First Hands")
-		print(self.evaluate_hand())
+		self.HistoryOfNumber.append(self.evaluate_hand())
 
 	def get_cards(self):
 		return self.Cards
 
 	def show_cards(self):
-		print(self.Cards)
+		op.Output.gpprint(self.Cards)
 
 	def get_turn(self):
 		return self.Turn
@@ -36,12 +37,12 @@ class Game(object):
 				print('can\'t draw')
 
 	def evaluate_hand(self):
-                Hand = self.Cards[0:10,1]
-                Number = ""
-                for i in range(9,-1,-1):
-                        for j in range(Hand[i]):
-                                Number += str(i)
-                return int(Number)
+		Hand = self.Cards[0:10,1]
+		Number = ""
+		for i in range(9,-1,-1):
+			for j in range(Hand[i]):
+				Number += str(i)
+		return int(Number)
 
 	def get_hand(self):
 		Hand = self.Cards[0:10,1]
@@ -59,12 +60,27 @@ class Game(object):
 			print('can\'t discard')
 
 	def call(self,Call):
-		if (Call > self.CurrentNumber and Call <=1000 and int(str(Call)[0]) >= int(str(Call)[1]) >= int(str(Call)[2])):
-			self.CurrentNumber = Call
+		if (Call > self.get_current_number() and Call <=1000 and int(str(Call)[0]) >= int(str(Call)[1]) >= int(str(Call)[2])):
+			self.HistoryOfNumber.append(Call)
 		else:
 			print('invaild call')
 
 		self.Turn += 1
+
+	def get_history_of_number(self,GoBack):
+		Temp = self.HistoryOfNumber.copy()
+		HistoryGoingBack = []
+		for i in range(0,GoBack):
+			HistoryGoingBack.append(Temp.pop())
+		return HistoryGoingBack
+			
+	def get_current_number(self):
+		if len(self.HistoryOfNumber)>=1:
+			Temp = self.HistoryOfNumber.copy()
+			return Temp.pop()
+		else:
+			return 0
+
 
 class Player(object):
 	def __init__(self,Game,Personality):
@@ -79,13 +95,24 @@ class Player(object):
 			self.DiscardCount += 1
 		self.Hand = np.array(self.PartGame.get_hand())
 
+
 	def turn(self):
 ## todo, The logic of discard based on personality. For now I set the standerd logic as placeholder.
+		## init.
 		self.Hand = np.array(self.PartGame.get_hand())
 		self.DiscardCount = 0
-		self.discard(dc.BasicLogic(self.Hand).discard_check())
-		print(self.DiscardCount)
-		self.PartGame.draw(self.DiscardCount)
-		self.Hand = np.array(self.PartGame.get_hand())
-		self.PartGame.call(cl.BasicLogic(self.PartGame.CurrentNumber,self.DiscardCount,self.Hand).call_check())
 
+		## Discard
+		self.discard(dc.BasicLogic(self.Hand).discard_check())
+		op.Output.gpprint(self.DiscardCount)
+
+		## Draw
+		self.PartGame.draw(self.DiscardCount)
+
+		## Call
+		self.Hand = np.array(self.PartGame.get_hand())
+		self.PartGame.call(cl.BasicLogic(self.PartGame.get_current_number(),self.DiscardCount,self.Hand).call_check())
+
+		## Doubt?
+		if self.PartGame.get_current_number() != self.PartGame.evaluate_hand():
+			self.PartGame.TurnsOfDoubt.append(self.PartGame.get_turn())
