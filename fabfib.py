@@ -5,14 +5,38 @@ import output as op
 
 class Game(object):
 	def __init__(self):## constructor
+		'''
+		Cards contain state of game.
+		Because Cards express where all card is.
+		In fabfib, the number of cards is 50(10 x5).
+		The number of each number is 5.
+		The number of numbers is 10(0-9).
+		'''
 		self.Cards = np.empty((0,3),int)
 		for i in range(10):
 			self.Cards = np.append(self.Cards, np.array([[5,0,0]]),axis=0)## Deck Hand Trash
+
+		'''
+		When calling, a Player needs history of number.
+		History of number is History of calls.
+		Players can access to these infomation.
+		'''
 		self.HistoryOfNumber = []
-		self.Turn = 1
+		self.Turn = 0
+
+		'''
+		Turns of doubt for analytics.
+		'''
 		self.TurnsOfDoubt = []
+
+		'''
+		Draw 3 cards and evaluate hand
+		'''
 		self.draw(3)
-		self.HistoryOfNumber.append(self.evaluate_hand())
+		self.first_turn()
+
+	def first_turn(self):
+		self.call(self.evaluate_hand())
 
 	def get_cards(self):
 		return self.Cards
@@ -97,7 +121,12 @@ class Player(object):
 
 
 	def turn(self):
-## todo, The logic of discard based on personality. For now I set the standerd logic as placeholder.
+
+		'''
+		TODO
+		The logic of discard based on personality.
+		For now I set the standerd logic as placeholder.
+		'''
 		## init.
 		self.Hand = np.array(self.PartGame.get_hand())
 		self.DiscardCount = 0
