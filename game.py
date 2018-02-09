@@ -28,6 +28,5 @@ if __name__ == '__main__':
 
 		print(Game.HistoryOfNumber)
 		print(Game.TurnsOfDoubt)
-		SumTurns += Game.get_turn()
 
 	print('time: ' + str(time.time() - CurrentTime))

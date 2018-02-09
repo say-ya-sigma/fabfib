@@ -30,20 +30,20 @@ class BasicLogic(CallStrategy):
 		if self.Number >= EvaluatedValue:
 
 			## Leaves to change is based on NonNines Count of Game's Number or DiscardCount.
-			ToCall = np.array([int(i) for i in list(str(self.Number))])
+			ToCall = np.array([int(i) for i in str(self.Number)])
 			ToCall = np.sort(ToCall) #ascending order
-			NonNines = 3 - len(np.where(ToCall == 9)[0])
-			LeavesToChange = min(self.DiscardCount,NonNines) -1
+			NonNines = len(np.where(ToCall != 9)[0])
+			LeavesToChange = min(self.DiscardCount,NonNines)
 
-			for i in range(0,LeavesToChange):
+			for i in range(0,LeavesToChange -1):
 				ToCall[i] = np.random.poisson(lam=4)
 				if ToCall[i] > 9:
 					ToCall[i] = 9
 			
-			ToCall[LeavesToChange] += 1
-			ToCall[LeavesToChange] += np.random.poisson(lam=0.2)
-			if ToCall[LeavesToChange] > 9:
-				ToCall[LeavesToChange] = 9
+			ToCall[LeavesToChange -1] += 1
+			ToCall[LeavesToChange -1] += np.random.poisson(lam=0.2)
+			if ToCall[LeavesToChange -1] > 9:
+				ToCall[LeavesToChange -1] = 9
 					
 			
 			return super().evaluate_hand(np.sort(ToCall)[::-1])

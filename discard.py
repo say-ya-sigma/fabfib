@@ -21,7 +21,6 @@ class BasicLogic(DiscardStrategy):
 
 	def discard_check(self):
 		self.less_then(6)
-		self.less_then(self.Max - 4)
 		if((self.Max - self.Min) < 4):
 			self.less_then(9)
 		return self.Discard
