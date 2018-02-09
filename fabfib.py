@@ -33,10 +33,6 @@ class Game(object):
 		Draw 3 cards and evaluate hand
 		'''
 		self.draw(3)
-		self.first_turn()
-
-	def first_turn(self):
-		self.call(self.evaluate_hand())
 
 	def get_cards(self):
 		return self.Cards
@@ -131,8 +127,10 @@ class Player(object):
 		self.Hand = np.array(self.PartGame.get_hand())
 		self.DiscardCount = 0
 
-		## Discard
-		self.discard(dc.BasicLogic(self.Hand).discard_check())
+		if self.PartGame.Turn != 0:
+			## Discard
+			self.discard(dc.BasicLogic(self.Hand).discard_check())
+
 		op.Output.gpprint(self.DiscardCount)
 
 		## Draw
