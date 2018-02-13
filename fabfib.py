@@ -2,6 +2,7 @@ import numpy as np
 import discard as dc
 import call as cl
 import output as op
+import doubt as db
 
 class Game(object):
 	def __init__(self):## constructor
@@ -30,7 +31,15 @@ class Game(object):
 		self.TurnsOfDoubt = []
 
 		'''
-		Draw 3 cards and evaluate hand
+		Discard Count and History
+		'''
+		self.DiscardCount = 0
+
+		self.HistoryOfDiscardCount = []
+
+
+		'''
+		Draw 3 cards
 		'''
 		self.draw(3)
 
@@ -76,6 +85,7 @@ class Game(object):
 		if(self.Cards[Discard,1]>0):
 			self.Cards[Discard,1] -= 1
 			self.Cards[Discard,2] += 1
+			self.DiscardCount += 1
 		else:
 			print('can\'t discard')
 
@@ -85,6 +95,8 @@ class Game(object):
 		else:
 			print('invaild call')
 
+		self.HistoryOfDiscardCount.append(self.DiscardCount)
+		self.DiscardCount = 0
 		self.Turn += 1
 
 	def get_history_of_number(self,GoBack):
@@ -101,18 +113,31 @@ class Game(object):
 		else:
 			return 0
 
+	def get_history_of_discard_count(self,GoBack):
+		Temp = self.HistoryOfDiscardCount.copy()
+		HistoryGoingBack = []
+		for i in range(0,GoBack):
+			HistoryGoingBack.append(Temp.pop())
+		return HistoryGoingBack
+
+	def get_last_discard_count(self):
+		if len(self.HistoryOfDiscardCount)>1:
+			Temp = self.HistoryOfDiscardCount.copy()
+			return Temp.pop()
+		else:
+			return 0
+
 
 class Player(object):
 	def __init__(self,Game,Personality):
 		self.PartGame = Game
 		self.Behavior = np.array(Personality)
-		self.DiscardCount = int()
 		self.Hand = np.array([],int)
+		self.RaiseDoubt = False
 
 	def discard(self,Discard):
 		for i in Discard:
 			self.PartGame.discard(i)
-			self.DiscardCount += 1
 		self.Hand = np.array(self.PartGame.get_hand())
 
 
@@ -125,21 +150,28 @@ class Player(object):
 		'''
 		## init.
 		self.Hand = np.array(self.PartGame.get_hand())
-		self.DiscardCount = 0
+		self.RaiseDoubt = False
 
 		if self.PartGame.Turn != 0:
+
+			# doubt check
+			if db.BasicLogic(self.PartGame.get_current_number(),self.PartGame.get_last_discard_count()).doubt_check():
+				self.RaiseDoubt = True
+				return self.RaiseDoubt
+
 			## Discard
 			self.discard(dc.BasicLogic(self.Hand).discard_check())
 
-		op.Output.gpprint(self.DiscardCount)
+		op.Output.gpprint(self.PartGame.DiscardCount)
 
 		## Draw
-		self.PartGame.draw(self.DiscardCount)
+		self.PartGame.draw(self.PartGame.DiscardCount)
 
 		## Call
 		self.Hand = np.array(self.PartGame.get_hand())
-		self.PartGame.call(cl.BasicLogic(self.PartGame.get_current_number(),self.DiscardCount,self.Hand).call_check())
+		self.PartGame.call(cl.BasicLogic(self.PartGame.get_current_number(),self.PartGame.DiscardCount,self.Hand).call_check())
 
 		## Doubt?
 		if self.PartGame.get_current_number() != self.PartGame.evaluate_hand():
 			self.PartGame.TurnsOfDoubt.append(self.PartGame.get_turn())
+		return self.RaiseDoubt
