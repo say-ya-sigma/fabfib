@@ -5,6 +5,15 @@ import sys
 
 GAMES = int(sys.argv[1])
 
+def PlayingGame(Game,PlayerList,Output):
+	while Game.get_current_number() != 999:
+		for Player in PlayerList:
+			if Player.turn():
+				print("Doubt")
+				return
+			Output.every_turn()
+			if Game.get_current_number() >=  999:
+				break
 if __name__ == '__main__':
 	CurrentTime = time.time()
 
@@ -19,12 +28,7 @@ if __name__ == '__main__':
 		print("First Hand")
 		print(Game.evaluate_hand())
 
-		while Game.get_current_number() != 999:
-			for Player in PlayerList:
-				Player.turn()
-				Output.every_turn()
-				if Game.get_current_number() >=  999:
-					break
+		PlayingGame(Game,PlayerList,Output)
 
 		print(Game.HistoryOfNumber)
 		print(Game.TurnsOfDoubt)

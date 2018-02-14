@@ -14,6 +14,13 @@ class DiscardStrategy(object):
 
 
 class BasicLogic(DiscardStrategy):
+	'''
+	Players on BasicLogic strategy discard ...
+
+	less then 6, because a high possibility to draw any of 5-9.
+	If the difference of Max and Min is less then 4, other then nine.
+	To raise the posibility of 9.
+	'''
 	def __init__(self,Hand):
 		super().__init__(Hand)
 		self.Max = np.max(Hand)
@@ -30,6 +37,10 @@ class BasicLogic(DiscardStrategy):
 		self.Hand = self.Hand[self.Hand >= Number]
 
 class OtherNine(DiscardStrategy):
+	'''
+	Players on this strategy discard other nine of hand.
+	I can evaluate this strategy as aggressive.
+	'''
 	def __init__(self,Hand):
 		super().__init__(Hand)
 
@@ -38,6 +49,10 @@ class OtherNine(DiscardStrategy):
 		return self.Discard
 
 class NoChange(DiscardStrategy):
+	'''
+	This strategy discard nothing.
+	I can evaluate this strategy as Tricky.
+	'''
 	def __init__(self,Hand):
 		super().__init__(Hand)
 

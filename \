@@ -4,8 +4,6 @@ import call as cl
 import output as op
 import doubt as db
 
-import random
-
 class Game(object):
 	def __init__(self):## constructor
 		'''
@@ -17,22 +15,7 @@ class Game(object):
 		'''
 		self.Cards = np.empty((0,3),int)
 		for i in range(10):
-			self.Cards = np.append(self.Cards, np.array([[5,0,0]]),axis = 0)## Deck Hand Trash
-
-		'''
-		Mostly, not to think about damage at Discard or Call.
-		It is only calculated at the time of Doubt.
-		'''
-		self.Damages = []
-		for i in range(10):
-			DamageArray = random.sample([1,1,1,2,3],5)
-			self.Damages.append(DamageArray)
-
-		'''
-		CurrentDamage is list of tuple.
-		[(Number, Damage), ... ]
-		'''
-		self.CurrentDamage = []
+			self.Cards = np.append(self.Cards, np.array([[5,0,0]]),axis=0)## Deck Hand Trash
 
 		'''
 		When calling, a Player needs history of number.
@@ -48,11 +31,9 @@ class Game(object):
 		self.TurnsOfDoubt = []
 
 		'''
-		Discard Count and History
+		Discard Count
 		'''
 		self.DiscardCount = 0
-
-		self.HistoryOfDiscardCount = []
 
 
 		'''
@@ -77,12 +58,8 @@ class Game(object):
 				for i in range(10):
 					Weight = np.append(Weight, self.Cards[i][0]/DeckTotal)
 				Drawn = int(np.random.choice(10,1,p=Weight))## (a,size,weight)
-
-				Damage = self.Damages[Drawn].pop()
-
 				self.Cards[Drawn,0] -= 1
 				self.Cards[Drawn,1] += 1
-				self.CurrentDamage.append((Drawn, Damage))
 			else:
 				print('can\'t draw')
 
@@ -116,7 +93,6 @@ class Game(object):
 		else:
 			print('invaild call')
 
-		self.HistoryOfDiscardCount.append(self.DiscardCount)
 		self.DiscardCount = 0
 		self.Turn += 1
 
@@ -134,31 +110,19 @@ class Game(object):
 		else:
 			return 0
 
-	def get_history_of_discard_count(self,GoBack):
-		Temp = self.HistoryOfDiscardCount.copy()
-		HistoryGoingBack = []
-		for i in range(0,GoBack):
-			HistoryGoingBack.append(Temp.pop())
-		return HistoryGoingBack
-
-	def get_last_discard_count(self):
-		if len(self.HistoryOfDiscardCount)>1:
-			Temp = self.HistoryOfDiscardCount.copy()
-			return Temp.pop()
-		else:
-			return 0
-
 
 class Player(object):
 	def __init__(self,Game,Personality):
 		self.PartGame = Game
 		self.Behavior = np.array(Personality)
+		self.DiscardCount = int()
 		self.Hand = np.array([],int)
 		self.RaiseDoubt = False
 
 	def discard(self,Discard):
 		for i in Discard:
 			self.PartGame.discard(i)
+			self.DiscardCount += 1
 		self.Hand = np.array(self.PartGame.get_hand())
 
 
@@ -171,15 +135,8 @@ class Player(object):
 		'''
 		## init.
 		self.Hand = np.array(self.PartGame.get_hand())
-		self.RaiseDoubt = False
 
 		if self.PartGame.Turn != 0:
-
-			# doubt check
-			if db.BasicLogic(self.PartGame.get_current_number(),self.PartGame.get_last_discard_count()).doubt_check():
-				self.RaiseDoubt = True
-				return self.RaiseDoubt
-
 			## Discard
 			self.discard(dc.BasicLogic(self.Hand).discard_check())
 
@@ -190,9 +147,8 @@ class Player(object):
 
 		## Call
 		self.Hand = np.array(self.PartGame.get_hand())
-		self.PartGame.call(cl.BasicLogic(self.PartGame.get_current_number(),self.PartGame.DiscardCount,self.Hand).call_check())
+		self.PartGame.call(cl.BasicLogic(self.PartGame.get_current_number(),self.DiscardCount,self.Hand).call_check())
 
 		## Doubt?
 		if self.PartGame.get_current_number() != self.PartGame.evaluate_hand():
 			self.PartGame.TurnsOfDoubt.append(self.PartGame.get_turn())
-		return self.RaiseDoubt
