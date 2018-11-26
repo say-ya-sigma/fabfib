@@ -11,6 +11,13 @@ class CallStrategy(object):
         self.DiscardCount = DiscardCount
 
     def evaluate_hand(self, Hand):
+        """evaluate_hand func
+        
+        >>> import numpy as np
+        >>> Call = CallStrategy(631,np.array([6,3,1]),1)
+        >>> Call.evaluate_hand(np.array([6,3,1]))
+        631
+        """
         Number = ""
         for i in range(3):
             Number += str(Hand[i])
@@ -53,3 +60,7 @@ class BasicLogic(CallStrategy):
 
         else:
             return EvaluatedValue
+
+if __name__=='__main__':
+    import doctest
+    doctest.testmod()

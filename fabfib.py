@@ -8,7 +8,7 @@ import random
 
 
 class Game(object):
-    def __init__(self):  # constructor
+    def __init__(self):
         '''
         Cards contain state of game.
         Because Cards express where all card is.
