@@ -14,7 +14,7 @@ class CallStrategy(object):
         """evaluate_hand func
         
         >>> import numpy as np
-        >>> Call = CallStrategy(631,np.array([6,3,1]),1)
+        >>> Call = CallStrategy(431,1,np.array([6,3,1]))
         >>> Call.evaluate_hand(np.array([6,3,1]))
         631
         """
@@ -25,6 +25,14 @@ class CallStrategy(object):
 
     @abstractmethod
     def call_check(self):
+        """abstractmethod
+        >>> import numpy as np
+        >>> Call = CallStrategy(431,1,np.array([6,3,1]))
+        >>> Call.call_check()
+        Traceback (most recent call last):
+        ...
+        NotImplementedError
+        """
         raise NotImplementedError()
 
 
@@ -33,6 +41,12 @@ class BasicLogic(CallStrategy):
         super().__init__(Number, DiscardCount, Hand)
 
     def call_check(self):
+        """Basic call_check method
+        >>> import numpy as np
+        >>> Basic = BasicLogic(431,1,np.array([6,3,1]))
+        >>> Basic.call_check()
+        631
+        """
         EvaluatedValue = super().evaluate_hand(self.Hand)
 
         # if real hand's value is weak,
