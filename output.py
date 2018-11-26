@@ -1,5 +1,5 @@
 class Output(object):
-    def __init__(self,Game):
+    def __init__(self, Game):
         self.Game = Game
 
     def every_turn(self):

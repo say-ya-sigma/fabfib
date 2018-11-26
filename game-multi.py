@@ -4,13 +4,14 @@ import multiprocessing as multi
 import time
 import sys
 
+
 def playing(self):
 
     print("Game start")
     Game = ff.Game()
-    Player1 = ff.Player(Game,[])
-    Player2 = ff.Player(Game,[])
-    PlayerList = [Player1,Player2]
+    Player1 = ff.Player(Game, [])
+    Player2 = ff.Player(Game, [])
+    PlayerList = [Player1, Player2]
     Output = op.Output(Game)
     print("First Hand")
     print(Game.evaluate_hand())
@@ -19,13 +20,11 @@ def playing(self):
         for Player in PlayerList:
             Player.turn()
             Output.every_turn()
-            if Game.get_current_number() >=  999:
+            if Game.get_current_number() >= 999:
                 break
 
     print(Game.HistoryOfNumber)
     print(Game.TurnsOfDoubt)
-
-
 
 
 if __name__ == '__main__':
@@ -36,4 +35,3 @@ if __name__ == '__main__':
     ProcPool.close()
 
     print('time: ' + str(time.time() - CurrentTime))
-
