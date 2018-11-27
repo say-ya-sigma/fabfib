@@ -104,6 +104,11 @@ class Game(object):
                 self.Cards[Drawn, 0] -= 1
                 self.Cards[Drawn, 1] += 1
                 self.CurrentDamage.append((Drawn, Damage))
+
+                # regist discard count
+                DiscardCount = self.DiscardCount
+                self.HistoryOfDiscardCount.append(DiscardCount)
+                self.DiscardCount = 0
             else:
                 print('can\'t draw')
 
@@ -140,6 +145,18 @@ class Game(object):
         return Number
 
     def discard(self, Discard):
+        """discard validation and execute
+        >>> Game = Game()
+        >>> len(Game.get_hand())
+        3
+        >>> Game.discard(Game.get_hand()[0])
+        >>> len(Game.get_hand())
+        2
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.discard(3)
+        can't discard
+        """
         if(self.Cards[Discard, 1] > 0):
             self.Cards[Discard, 1] -= 1
             self.Cards[Discard, 2] += 1
@@ -148,19 +165,37 @@ class Game(object):
             print('can\'t discard')
 
     def call(self, Call):
+        """call validation and regist
+        >>> Game = Game()
+        >>> Game.call(632)
+        >>> print(Game.HistoryOfNumber)
+        [632]
+        >>> Game.call(1000)
+        invaild call
+        >>> Game.call(432)
+        invaild call
+        """
         CallIsHigher = Call > self.get_current_number()
         DigitList = list(map(int, str(Call)))
         CallIsDesc = DigitList[0] >= DigitList[1] >= DigitList[2]
-        if (CallIsHigher and Call <= 1000 and CallIsDesc):
+        if (CallIsHigher and Call <= 999 and CallIsDesc):
             self.HistoryOfNumber.append(Call)
+            self.HistoryOfDiscardCount.append(self.DiscardCount)
+            self.DiscardCount = 0
+            self.Turn += 1
         else:
             print('invaild call')
 
-        self.HistoryOfDiscardCount.append(self.DiscardCount)
-        self.DiscardCount = 0
-        self.Turn += 1
 
     def get_history_of_number(self, GoBack):
+        """history of call number for analysis
+        >>> Game = Game()
+        >>> Game.call(432)
+        >>> Game.call(641)
+        >>> Game.call(643)
+        >>> Game.get_history_of_number(2)
+        [643, 641]
+        """
         Temp = self.HistoryOfNumber.copy()
         HistoryGoingBack = []
         for i in range(0, GoBack):
@@ -168,6 +203,16 @@ class Game(object):
         return HistoryGoingBack
 
     def get_current_number(self):
+        """current call number
+        >>> Game = Game()
+        >>> print(Game.get_current_number())
+        0
+        >>> Game.call(432)
+        >>> Game.call(641)
+        >>> Game.call(643)
+        >>> print(Game.get_current_number())
+        643
+        """
         if len(self.HistoryOfNumber) >= 1:
             Temp = self.HistoryOfNumber.copy()
             return Temp.pop()
@@ -175,6 +220,18 @@ class Game(object):
             return 0
 
     def get_history_of_discard_count(self, GoBack):
+        """history of discard count for analysis
+        >>> Game = Game()
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.draw(2)
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.draw(1)
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.draw(1)
+        >>> Game.get_history_of_discard_count(2)
+        [1, 1]
+        """
         Temp = self.HistoryOfDiscardCount.copy()
         HistoryGoingBack = []
         for i in range(0, GoBack):
@@ -182,6 +239,18 @@ class Game(object):
         return HistoryGoingBack
 
     def get_last_discard_count(self):
+        """last discard count
+        >>> Game = Game()
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.draw(2)
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.draw(1)
+        >>> Game.discard(Game.get_hand()[0])
+        >>> Game.draw(1)
+        >>> Game.get_last_discard_count()
+        1
+        """
         if len(self.HistoryOfDiscardCount) > 1:
             Temp = self.HistoryOfDiscardCount.copy()
             return Temp.pop()
