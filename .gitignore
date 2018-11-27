@@ -1,5 +1,6 @@
 __pycache__/
 htmlcov/
+.coverage
 *.pyc
 *.txt
 *.py,cover

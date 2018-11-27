@@ -12,7 +12,7 @@ class CallStrategy(object):
 
     def evaluate_hand(self, Hand):
         """evaluate_hand func
-        
+
         >>> import numpy as np
         >>> Call = CallStrategy(431,1,np.array([6,3,1]))
         >>> Call.evaluate_hand(np.array([6,3,1]))
@@ -43,9 +43,18 @@ class BasicLogic(CallStrategy):
     def call_check(self):
         """Basic call_check method
         >>> import numpy as np
-        >>> Basic = BasicLogic(431,1,np.array([6,3,1]))
-        >>> Basic.call_check()
-        631
+        >>> RegularCase = BasicLogic(431,1,np.array([6,3,1]))
+        >>> print(RegularCase.call_check() == 631)
+        True
+        >>> IregularCase = BasicLogic(831,1,np.array([6,3,1]))
+        >>> print(631 < IregularCase.call_check() <= 999)
+        True
+        >>> NineCase = BasicLogic(995,1,np.array([9,9,4]))
+        >>> print(995 < NineCase.call_check() <= 999)
+        True
+        >>> AllChange = BasicLogic(654,3,np.array([4,3,1]))
+        >>> print(654 < AllChange.call_check() <= 999)
+        True
         """
         EvaluatedValue = super().evaluate_hand(self.Hand)
 
@@ -75,6 +84,7 @@ class BasicLogic(CallStrategy):
         else:
             return EvaluatedValue
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     import doctest
     doctest.testmod()

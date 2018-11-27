@@ -61,15 +61,35 @@ class Game(object):
         self.draw(3)
 
     def get_cards(self):
+        """get_all cards state
+        >>> Game = Game()
+        >>> AllCards = Game.get_cards()
+        >>> print(len(AllCards))
+        10
+        >>> print([len(NumState) for NumState in AllCards])
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+        >>> print(sum([len(NumState) for NumState in AllCards]))
+        30
+        """
         return self.Cards
 
     def show_cards(self):
         op.Output.gpprint(self.Cards)
 
     def get_turn(self):
+        """get current turn start with 0.
+        >>> Game = Game()
+        >>> Game.get_turn()
+        0
+        """
         return self.Turn
 
     def draw(self, Cards):
+        """Max is 3.
+        >>> Game = Game()
+        >>> Game.draw(1)
+        can't draw
+        """
         for i in range(Cards):
             if(self.Cards.sum(axis=0)[1] < 3):
                 Weight = np.array([])  # dtype's default is float64
@@ -88,6 +108,14 @@ class Game(object):
                 print('can\'t draw')
 
     def evaluate_hand(self):
+        """evaluate hand from Cards
+        >>> Game = Game()
+        >>> Value = Game.evaluate_hand()
+        >>> type(Value)
+        <class 'int'>
+        >>> print(0 <= Value <=999)
+        True
+        """
         Hand = self.Cards[0:10, 1]
         Number = ""
         for i in range(9, -1, -1):
@@ -96,6 +124,14 @@ class Game(object):
         return int(Number)
 
     def get_hand(self):
+        """get hand as numpy.array
+        >>> Game = Game()
+        >>> Hand = Game.get_hand()
+        >>> type(Hand)
+        <class 'numpy.ndarray'>
+        >>> len(Hand)
+        3
+        """
         Hand = self.Cards[0:10, 1]
         Number = np.array([], int)
         for i in range(9, -1, -1):
@@ -180,7 +216,7 @@ class Player(object):
             # doubt check
             if db.BasicLogic(self.PartGame.get_current_number(),
                              self.PartGame.get_last_discard_count()) \
-                            .doubt_check():
+                    .doubt_check():
                 self.RaiseDoubt = True
                 return self.RaiseDoubt
 
@@ -201,3 +237,8 @@ class Player(object):
         if self.PartGame.get_current_number() != self.PartGame.evaluate_hand():
             self.PartGame.TurnsOfDoubt.append(self.PartGame.get_turn())
         return self.RaiseDoubt
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
