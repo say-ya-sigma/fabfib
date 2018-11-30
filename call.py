@@ -68,6 +68,7 @@ class BasicLogic(CallStrategy):
             ToCall = np.sort(ToCall)  # ascending order
             NonNines = len(np.where(ToCall != 9)[0])
             LeavesToChange = min(self.DiscardCount, NonNines)
+            print(LeavesToChange)
 
             for i in range(0, LeavesToChange - 1):
                 ToCall[i] = np.random.poisson(lam=4)

@@ -1,7 +1,6 @@
 import numpy as np
 import discard as dc
 import call as cl
-import output as op
 import doubt as db
 
 import random
@@ -105,10 +104,6 @@ class Game(object):
                 self.Cards[Drawn, 1] += 1
                 self.CurrentDamage.append((Drawn, Damage))
 
-                # regist discard count
-                DiscardCount = self.DiscardCount
-                self.HistoryOfDiscardCount.append(DiscardCount)
-                self.DiscardCount = 0
             else:
                 print('can\'t draw')
 
@@ -221,16 +216,6 @@ class Game(object):
 
     def get_history_of_discard_count(self, GoBack):
         """history of discard count for analysis
-        >>> Game = Game()
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.draw(2)
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.draw(1)
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.draw(1)
-        >>> Game.get_history_of_discard_count(2)
-        [1, 1]
         """
         Temp = self.HistoryOfDiscardCount.copy()
         HistoryGoingBack = []
@@ -240,18 +225,8 @@ class Game(object):
 
     def get_last_discard_count(self):
         """last discard count
-        >>> Game = Game()
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.draw(2)
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.draw(1)
-        >>> Game.discard(Game.get_hand()[0])
-        >>> Game.draw(1)
-        >>> Game.get_last_discard_count()
-        1
         """
-        if len(self.HistoryOfDiscardCount) > 1:
+        if len(self.HistoryOfDiscardCount) >= 1:
             Temp = self.HistoryOfDiscardCount.copy()
             return Temp.pop()
         else:
@@ -260,22 +235,37 @@ class Game(object):
 
 class Player(object):
     def __init__(self, Game, Personality):
+        """personality define behavior(todo)
+        """
         self.PartGame = Game
         self.Behavior = np.array(Personality)
         self.Hand = np.array([], int)
         self.RaiseDoubt = False
 
     def discard(self, Discard):
+        """player's discardfunc
+        >>> Game = Game()
+        >>> Player = Player(Game, [])
+        >>> len(Game.get_hand())
+        3
+        >>> Player.discard([Game.get_hand()[0],Game.get_hand()[1]])
+        >>> len(Game.get_hand())
+        1
+        """
         for i in Discard:
             self.PartGame.discard(i)
         self.Hand = np.array(self.PartGame.get_hand())
 
     def turn(self):
-        '''
-        TODO
-        The logic of discard based on personality.
-        For now I set the standerd logic as placeholder.
-        '''
+        """TODO
+        Player strategy should be based on personality in this program.
+        For now standard logics are placed as placeholder.
+        >>> Game = Game()
+        >>> Player = Player(Game, [])
+        >>> Doubt = False
+        >>> while (not Doubt) and (Game.get_current_number() < 999):
+        ...     Doubt = Player.turn()
+        """
         # init.
         self.Hand = np.array(self.PartGame.get_hand())
         self.RaiseDoubt = False
@@ -291,8 +281,6 @@ class Player(object):
 
             # Discard
             self.discard(dc.BasicLogic(self.Hand).discard_check())
-
-        op.Output.gpprint(self.PartGame.DiscardCount)
 
         # Draw
         self.PartGame.draw(self.PartGame.DiscardCount)
